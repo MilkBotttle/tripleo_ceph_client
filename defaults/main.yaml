@@ -1,0 +1,34 @@
+---
+ceph_mon: []
+
+ceph_auth_user: openstack
+
+use_ceph_openrstack_services:
+  - service: cinder-volume
+    pool_name: tripleo-volumes
+    auth_user: "{{ ceph_auth_user }}"
+
+  - service: cinder-backup
+    pool_name: tripleo-volumes-backup
+    auth_user: "{{ ceph_auth_user }}"
+
+  - service: glance-api
+    pool_name: tripleo-images
+    auth_user: "{{ ceph_auth_user}}"
+
+  - service: nova-compute
+    pool_name: tripleo-instances
+    auth_user: "{{ ceph_auth_user }}"
+
+
+# Path to local ceph.conf file
+# Leave this commented to obtain a ceph.conf from one of the monitors defined in ceph_mons
+#ceph_conf_file: |
+#  [global]
+#  fsid = 4037aa5f-abde-4378-9470-f73dbd6ceaba
+#  mon_initial_members = mon1.example.local,mon2.example.local,mon3.example.local
+#  mon_host = 10.16.5.40,10.16.5.41,10.16.5.42
+#  auth_cluster_required = cephx
+#  auth_service_required = cephx
+#  auth_client_required = cephx
+

@@ -1,0 +1,4 @@
+---
+- include: install_ceph_pkgs.yaml
+- include: ceph_get_mon_host.yaml
+- include: copy_config_to_node.yaml

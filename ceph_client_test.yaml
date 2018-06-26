@@ -1,0 +1,8 @@
+---
+- name: Configure ceph
+  hosts: all
+  vars:
+    
+  roles:
+    - 
+    

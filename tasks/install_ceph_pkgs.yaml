@@ -1,0 +1,8 @@
+---
+- name: Install ceph pkgs
+  yum:
+    name: "{{ item }}"
+    with_items: "{{ ceph_pkgs }}"
+  when: inventory_hostname in groups['controller'] or
+        inventory_hostname in groups['compute']
+  tags: ceph-pkg-install

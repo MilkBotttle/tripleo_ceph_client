@@ -1,0 +1,4 @@
+---
+ceph_pkgs:
+  - python-rbd
+  - ceph-common

@@ -1,0 +1,52 @@
+- name: Get ceph.conf and store contents when ceph_conf_file is not defined
+  slurp:
+    src: /etc/ceph/ceph.conf
+  register: ceph_conf_content_mon
+  delegate_to: '{{ ceph_mon_host }}'
+  changed_when: false
+  when:
+    - ceph_conf_file is not defined
+
+- name: Register ceph_conf fact when ceph_conf_file is not defined
+  set_fact:
+    ceph_conf: "{{ ceph_conf_content_mon.content | b64decode }}"
+  when:
+    - ceph_conf_file is not defined
+
+- name: Register ceph_conf fact when ceph_conf_file is defined
+  set_fact:
+    ceph_conf: "{{ ceph_conf_file }}\n\n"
+  when:
+    - ceph_conf_file is defined
+
+- name: Create ceph.conf from mon host
+  copy:
+    content: '{{ ceph_conf }}'
+    dest: /etc/ceph/ceph.conf
+    owner:  root
+    group:  root
+    mode:   0644
+
+- name: Save key in ceph mon
+  shell: ceph auth get-or-create client.{{ ceph_auth_user }} > /etc/ceph/ceph.client.{{ ceph_auth_user }}.keyring
+  delegate_to: '{{ ceph_mon_host }}'
+  changed_when: false
+    
+- name: Get keyring from ceph mon
+  slurp:
+    src: /etc/ceph/ceph.client.{{ ceph_auth_user }}.keyring
+  register: ceph_keyring_content_mon
+  delegate_to:  '{{ ceph_mon_host }}'
+  changed_when: false
+
+- name: Register ceph_keyring fact
+  set_fact:
+    ceph_keyring: "{{ ceph_keyring_content_mon.content | b64decode }}"
+
+- name: Create keyring from mon host
+  copy:
+    content: '{{ ceph_keyring }}'
+    dest: /etc/ceph/ceph.client.{{ ceph_auth_user }}.keyring
+    owner:  root
+    group:  root
+    mode:   0644
